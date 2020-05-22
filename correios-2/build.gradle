@@ -1,0 +1,70 @@
+apply plugin: 'java'
+apply plugin: 'eclipse'
+apply plugin: 'maven-publish'
+apply plugin: 'maven'
+apply plugin: 'signing'
+apply plugin: 'com.jfrog.bintray'
+
+compileJava.options.encoding = 'UTF-8'
+
+group = 'br.com.correios'
+archivesBaseName = 'correios-java-sdk'
+
+buildscript {
+    repositories {
+        mavenLocal()
+        mavenCentral()
+        jcenter()
+    }
+
+    dependencies {
+        classpath 'net.researchgate:gradle-release:2.3.5'
+        classpath 'com.jfrog.bintray.gradle:gradle-bintray-plugin:1.7'
+    }
+}
+
+eclipse {
+    classpath {
+        downloadJavadoc = true
+        downloadSources = true
+    }
+}
+
+bintray {
+    user = System.getProperty("bintray_user")
+    key = System.getProperty("bintray_key")
+    configurations = ['archives']
+    pkg {
+        repo = 'correios-java-sdk'
+        name = 'correios-java-sdk'
+        userOrg = "shipping7"
+        licenses = ['Apache-2.0']
+        vcsUrl = 'https://github.com/shipping7/correios-java-sdk.git'
+    }
+}
+
+repositories {
+    mavenCentral()
+    mavenLocal()
+}
+
+dependencies {
+    compile "org.apache.commons:commons-lang3:3.4"
+    compile "com.google.guava:guava:19.0"
+    compile "org.eclipse.persistence:org.eclipse.persistence.moxy:2.6.4"
+
+    testCompile "junit:junit:4.12"
+    testCompile "org.mockito:mockito-core:1.10.19"
+    testCompile "org.assertj:assertj-core:1.0.0"
+}
+
+task sourcesJar(type: Jar) {
+    from sourceSets.main.allSource
+    classifier = 'sources'
+}
+
+artifacts {
+    archives jar
+
+    archives sourcesJar
+}
